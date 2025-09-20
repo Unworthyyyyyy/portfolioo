@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VitaTrack - Health & Fitness Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-light: #dbeafe;
+            --secondary: #64748b;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gray: #94a3b8;
+            --light-gray: #e2e8f0;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --hover-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background-color: #f1f5f9;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header Styles */
+        header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+        
+        nav a {
+            color: var(--secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            position: relative;
+            font-size: 16px;
+        }
+        
+        nav a:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 3px;
+            bottom: -5px;
+            left: 0;
+            background-color: var(--primary);
+            transition: width 0.3s;
+            border-radius: 2px;
+        }
+        
+        nav a:hover:after, nav a.active:after {
+            width: 100%;
+        }
+        
+        nav a:hover, nav a.active {
+            color: var(--primary);
+        }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .user-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid var(--primary-light);
+        }
+        
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .user-role {
+            font-size: 14px;
+            color: var(--secondary);
+        }
+        
+        /* Dashboard Layout */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 30px;
+            margin: 40px 0;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: var(--card-shadow);
+            height: fit-content;
+        }
+        
+        .sidebar-section {
+            margin-bottom: 30px;
+        }
+        
+        .sidebar-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+        }
+        
+        .sidebar-menu li {
+            margin-bottom: 12px;
+        }
+        
+        .sidebar-menu a {
+            color: var(--secondary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+        
+        .goal-progress {
+            background: var(--primary-light);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .goal-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .progress-circle {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 15px;
+            position: relative;
+        }
+        
+        .progress-circle svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+        
+        .progress-circle circle {
+            fill: none;
+            stroke-width: 8;
+            stroke-linecap: round;
+            transform-origin: center;
+        }
+        
+        .progress-bg {
+            stroke: var(--light-gray);
+        }
+        
+        .progress-value {
+            stroke: var(--primary);
+            stroke-dasharray: 339.3;
+            stroke-dashoffset: calc(339.3 - (339.3 * 72) / 100);
+        }
+        
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .goal-desc {
+            font-size: 14px;
+            color: var(--secondary);
+        }
+        
+        /* Main Content */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .steps .stat-icon {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+        
+        .calories .stat-icon {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+        
+        .heart .stat-icon {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+        
+        .sleep .stat-icon {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--primary);
+        }
+        
+        .stat-info {
+            flex: 1;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .stat-title {
+            font-size: 14px;
+            color: var(--secondary);
+        }
+        
+        /* Charts Grid */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+        
+        .chart-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .chart-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chart-actions select {
+            background: var(--light);
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: var(--dark);
+            font-size: 14px;
+        }
+        
+        .chart-container {
+            height: 250px;
+            position: relative;
+        }
+        
+        .chart-placeholder {
+            width: 100%;
+            height: 100%;
+            background: var(--light);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--secondary);
+        }
+        
+        /* Activities Grid */
+        .activities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .activity-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .activity-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .activity-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .activity-list {
+            list-style: none;
+        }
+        
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        
+        .walking .activity-icon {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--primary);
+        }
+        
+        .running .activity-icon {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+        
+        .cycling .activity-icon {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+        
+        .activity-info {
+            flex: 1;
+        }
+        
+        .activity-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .activity-details {
+            font-size: 14px;
+            color: var(--secondary);
+        }
+        
+        .activity-value {
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        /* Footer */
+        footer {
+            background: white;
+            padding: 40px 0;
+            margin-top: 40px;
+            border-top: 1px solid var(--light-gray);
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .footer-links a {
+            color: var(--secondary);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+        
+        .copyright {
+            color: var(--secondary);
+            font-size: 14px;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            nav ul {
+                gap: 15px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .activities-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .footer-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stat-card {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <span>VitaTrack</span>
+                </div>
+                
+                <nav>
+                    <ul>
+                        <li><a href="#" class="active">Dashboard</a></li>
+                        <li><a href="#">Activity</a></li>
+                        <li><a href="#">Nutrition</a></li>
+                        <li><a href="#">Sleep</a></li>
+                        <li><a href="#">Goals</a></li>
+                    </ul>
+                </nav>
+                
+                <div class="header-actions">
+                    <div class="user-profile">
+                        <div class="user-avatar">
+                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=464&q=80" alt="User Profile">
+                        </div>
+                        <div class="user-info">
+                            <div class="user-name">Sarah Johnson</div>
+                            <div class="user-role">Premium Member</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Dashboard -->
+    <div class="container">
+        <div class="dashboard">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-section">
+                    <h3 class="sidebar-title"><i class="fas fa-fire"></i> Daily Summary</h3>
+                    <div class="goal-progress">
+                        <div class="goal-title">Daily Goal Completion</div>
+                        <div class="progress-circle">
+                            <svg viewBox="0 0 120 120">
+                                <circle class="progress-bg" cx="60" cy="60" r="54"></circle>
+                                <circle class="progress-value" cx="60" cy="60" r="54"></circle>
+                            </svg>
+                            <div class="progress-text">72%</div>
+                        </div>
+                        <p class="goal-desc">You're almost there! Keep going!</p>
+                    </div>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3 class="sidebar-title"><i class="fas fa-chart-line"></i> Health Metrics</h3>
+                    <ul class="sidebar-menu">
+                        <li><a href="#"><i class="fas fa-walking"></i> Steps</a></li>
+                        <li><a href="#"><i class="fas fa-running"></i> Distance</a></li>
+                        <li><a href="#"><i class="fas fa-fire"></i> Calories</a></li>
+                        <li><a href="#"><i class="fas fa-heart"></i> Heart Rate</a></li>
+                        <li><a href="#"><i class="fas fa-bed"></i> Sleep</a></li>
+                    </ul>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3 class="sidebar-title"><i class="fas fa-cog"></i> Settings</h3>
+                    <ul class="sidebar-menu">
+                        <li><a href="#"><i class="fas fa-user"></i> Profile</a></li>
+                        <li><a href="#"><i class="fas fa-bell"></i> Notifications</a></li>
+                        <li><a href="#"><i class="fas fa-share-alt"></i> Sharing</a></li>
+                        <li><a href="#"><i class="fas fa-download"></i> Data Export</a></li>
+                    </ul>
+                </div>
+            </aside>
+            
+            <!-- Main Content -->
+            <main class="main-content">
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card steps">
+                        <div class="stat-icon">
+                            <i class="fas fa-walking"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value">8,542</div>
+                            <div class="stat-title">Steps Today</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card calories">
+                        <div class="stat-icon">
+                            <i class="fas fa-fire"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value">2,348</div>
+                            <div class="stat-title">Calories Burned</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card heart">
+                        <div class="stat-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value">72</div>
+                            <div class="stat-title">Resting Heart Rate</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card sleep">
+                        <div class="stat-icon">
+                            <i class="fas fa-bed"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value">7h 12m</div>
+                            <div class="stat-title">Sleep Last Night</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Charts Grid -->
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Weekly Activity</h3>
+                            <div class="chart-actions">
+                                <select>
+                                    <option>Steps</option>
+                                    <option>Calories</option>
+                                    <option>Distance</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <div class="chart-placeholder">
+                                <i class="fas fa-chart-line" style="font-size: 32px; margin-right: 10px;"></i>
+                                Activity Chart Visualization
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Sleep Quality</h3>
+                            <div class="chart-actions">
+                                <select>
+                                    <option>Weekly</option>
+                                    <option>Monthly</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <div class="chart-placeholder">
+                                <i class="fas fa-chart-pie" style="font-size: 32px; margin-right: 10px;"></i>
+                                Sleep Chart Visualization
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Activities Grid -->
+                <div class="activities-grid">
+                    <div class="activity-card">
+                        <div class="activity-header">
+                            <h3 class="activity-title">Recent Activities</h3>
+                        </div>
+                        <ul class="activity-list">
+                            <li class="activity-item walking">
+                                <div class="activity-icon">
+                                    <i class="fas fa-walking"></i>
+                                </div>
+                                <div class="activity-info">
+                                    <div class="activity-name">Morning Walk</div>
+                                    <div class="activity-details">45 min • 3.2 km</div>
+                                </div>
+                                <div class="activity-value">4,218 steps</div>
+                            </li>
+                            
+                            <li class="activity-item running">
+                                <div class="activity-icon">
+                                    <i class="fas fa-running"></i>
+                                </div>
+                                <div class="activity-info">
+                                    <div class="activity-name">Evening Run</div>
+                                    <div class="activity-details">35 min • 5.7 km</div>
+                                </div>
+                                <div class="activity-value">327 cal</div>
+                            </li>
+                            
+                            <li class="activity-item cycling">
+                                <div class="activity-icon">
+                                    <i class="fas fa-bicycle"></i>
+                                </div>
+                                <div class="activity-info">
+                                    <div class="activity-name">Cycling</div>
+                                    <div class="activity-details">1h 10min • 15.3 km</div>
+                                </div>
+                                <div class="activity-value">512 cal</div>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="activity-card">
+                        <div class="activity-header">
+                            <h3 class="activity-title">Health Stats</h3>
+                        </div>
+                        <ul class="activity-list">
+                            <li class="activity-item">
+                                <div class="activity-icon" style="background: rgba(59, 130, 246, 0.1); color: var(--primary);">
+                                    <i class="fas fa-weight"></i>
+                                </div>
+                                <div class="activity-info">
+                                    <div class="activity-name">Weight</div>
+                                    <div class="activity-details">Last recorded: Today</div>
+                                </div>
+                                <div class="activity-value">68.5 kg</div>
+                            </li>
+                            
+                            <li class="activity-item">
+                                <div class="activity-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success);">
+                                    <i class="fas fa-tint"></i>
+                                </div>
+                                <div class="activity-info">
+                                    <div class="activity-name">Water Intake</div>
+                                    <div class="activity-details">Today's consumption</div>
+                                </div>
+                                <div class="activity-value">1.8 L</div>
+                            </li>
+                            
+                            <li class="activity-item">
+                                <div class="activity-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--warning);">
+                                    <i class="fas fa-apple-alt"></i>
+                                </div>
+                                <div class="activity-info">
+                                    <div class="activity-name">Nutrition</div>
+                                    <div class="activity-details">Calories consumed</div>
+                                </div>
+                                <div class="activity-value">1,840 cal</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="#">About Us</a>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Contact</a>
+                    <a href="#">Help Center</a>
+                </div>
+                <div class="copyright">
+                    &copy; 2023 VitaTrack. This is a portfolio project. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Simple animation for the progress circle
+        document.addEventListener('DOMContentLoaded', function() {
+            const progressValue = document.querySelector('.progress-value');
+            progressValue.style.transition = 'stroke-dashoffset 1.5s ease-in-out';
+            
+            // Simulate loading animation
+            setTimeout(function() {
+                progressValue.style.strokeDashoffset = 'calc(339.3 - (339.3 * 72) / 100)';
+            }, 500);
+            
+            // Add animation to stat cards
+            const statCards = document.querySelectorAll('.stat-card');
+            statCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 200 * (index + 1));
+            });
+        });
+    </script>
+</body>
+</html>
